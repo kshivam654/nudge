@@ -1,0 +1,126 @@
+{
+  "name": "nudge",
+  "displayName": "Nudge",
+  "description": "A live, conversational AI pair-programming tutor for DSA interview prep — watches your active file, talks through hints via voice or text, and adapts to what trips you up over time.",
+  "version": "0.1.0",
+  "publisher": "kshivam",
+  "license": "MIT",
+  "icon": "media/icon-marketplace.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kshivam654/nudge.git"
+  },
+  "keywords": [
+    "dsa",
+    "interview prep",
+    "ai tutor",
+    "voice",
+    "pair programming",
+    "leetcode"
+  ],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Education", "Machine Learning", "Other"],
+  "activationEvents": [
+    "onView:nudge.chatView"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "nudge",
+          "title": "Nudge",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "nudge": [
+        {
+          "id": "nudge.chatView",
+          "name": "Tutor",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "nudge.setApiKey",
+        "title": "Nudge: Set OpenAI API Key"
+      },
+      {
+        "command": "nudge.endSession",
+        "title": "Nudge: End Tutoring Session"
+      },
+      {
+        "command": "nudge.clearLearningProfile",
+        "title": "Nudge: Reset Learning Profile"
+      },
+      {
+        "command": "nudge.showLogs",
+        "title": "Nudge: Show Debug Logs"
+      },
+      {
+        "command": "nudge.selectMicrophone",
+        "title": "Nudge: Select Microphone"
+      }
+    ],
+    "configuration": {
+      "title": "Nudge",
+      "properties": {
+        "nudge.voice": {
+          "type": "string",
+          "enum": ["marin", "cedar", "alloy", "ash", "ballad", "coral", "echo", "sage", "shimmer", "verse"],
+          "default": "marin",
+          "description": "Voice used by the spoken tutor (OpenAI Realtime API voice)."
+        },
+        "nudge.realtimeModel": {
+          "type": "string",
+          "default": "gpt-realtime-2.1",
+          "markdownDescription": "OpenAI Realtime API model id. Update this if OpenAI ships a newer realtime model."
+        },
+        "nudge.idleThresholdSeconds": {
+          "type": "number",
+          "default": 45,
+          "minimum": 10,
+          "description": "How many seconds of no typing in the watched file before Nudge proactively checks in."
+        },
+        "nudge.maxContextChars": {
+          "type": "number",
+          "default": 6000,
+          "minimum": 500,
+          "description": "Max characters of the active file's content sent to the model as context (truncated around the cursor if the file is longer)."
+        },
+        "nudge.micDeviceIndex": {
+          "type": "number",
+          "default": -1,
+          "description": "avfoundation microphone device index (macOS). -1 means unset — Nudge will prompt you to pick one the first time you enable voice. Use 'Nudge: Select Microphone' to change it."
+        },
+        "nudge.autoMuteDuringPlayback": {
+          "type": "boolean",
+          "default": true,
+          "description": "Stop forwarding mic audio to the model while the tutor is speaking, so it can't pick up its own voice through your speakers and self-trigger an interruption. Turn this off only if you're on headphones (no speaker-to-mic path) and want to interrupt the tutor mid-sentence by voice."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "check-types": "tsc --noEmit -p ./",
+    "vscode:prepublish": "npm run check-types && node esbuild.js --production",
+    "package": "npm run vscode:prepublish"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.90.0",
+    "@types/ws": "^8.5.13",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.0"
+  }
+}
